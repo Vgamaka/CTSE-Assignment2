@@ -1,285 +1,324 @@
+Here’s your **final README (clean, ready-to-copy, no extra formatting issues)**:
+
+---
+
+```markdown
 # Local Multi-Agent SDLC Planning Assistant
 
 ## Project Overview
 
-This project is a fully local university assignment system for software project planning. A rough software idea is passed through four LangGraph agents that progressively turn it into a structured engineering plan. The implementation is intentionally assignment-friendly: deterministic where possible, readable for student collaboration, and ready for stronger local Ollama reasoning in later iterations.
+This project is a fully local multi-agent system for software project planning. A rough software idea is passed through four LangGraph agents that progressively transform it into a structured SDLC plan.
 
-The current project produces:
+The system is designed for:
+- university assignment demonstration
+- local execution (no cloud dependency)
+- deterministic and testable outputs
+- future extensibility with local LLMs (Ollama)
 
-- a normalized project brief
-- structured requirements
-- a delivery plan with user stories, modules, tasks, and phases
-- a review report with risks and coverage gaps
-- a final Markdown report
-- a machine-readable JSON snapshot of the whole shared state
-- a JSONL execution trace
+---
+
+## What the System Produces
+
+- Normalized project brief  
+- Functional and non-functional requirements  
+- User stories, modules, tasks, and phases  
+- Risk analysis and validation report  
+- Final Markdown SDLC report  
+- JSON snapshot of full workflow state  
+- JSONL execution trace logs  
+
+---
 
 ## Architecture Summary
 
-The system uses exactly four agents connected in a LangGraph workflow:
+The system uses a 4-agent LangGraph workflow:
 
-1. `intake_agent`
-2. `requirements_agent`
-3. `planner_agent`
-4. `review_agent`
+1. `intake_agent`  
+2. `requirements_agent`  
+3. `planner_agent`  
+4. `review_agent`  
 
-The workflow is mostly linear, but the review stage can route back to intake once if severe ambiguity is detected. This keeps the orchestration simple enough for a terminal demo while still showing multi-agent coordination and conditional routing.
+Workflow:
 
-## File Structure
+Input → Intake → Requirements → Planner → Review → Output  
+                                             ↑  
+                                     (loop if ambiguity)
 
-```text
-.
-├── README.md
-├── requirements.txt
-├── main.py
-├── agents/
-│   ├── intake_agent.py
-│   ├── requirements_agent.py
-│   ├── planner_agent.py
-│   └── review_agent.py
-├── config/
-│   ├── prompts.py
-│   └── settings.py
-├── graph/
-│   ├── routing.py
-│   ├── state.py
-│   └── workflow.py
-├── logs/
-├── outputs/
-├── sample_inputs/
-│   ├── insurance_archiving.txt
-│   ├── nursery_app.txt
-│   ├── event_system.txt
-│   └── smart_campus_portal.txt
-├── tests/
-│   ├── conftest.py
-│   ├── test_system_flow.py
-│   ├── test_intake_agent.py
-│   ├── test_requirements_agent.py
-│   ├── test_planner_agent.py
-│   └── test_review_agent.py
-├── tools/
-│   ├── brief_normalizer.py
-│   ├── requirements_formatter.py
-│   ├── task_breakdown.py
-│   └── consistency_checker.py
-└── utils/
-    ├── file_io.py
-    ├── helpers.py
-    └── logger.py
+- Shared global state across all agents  
+- Conditional routing handled by Review Agent  
+- Fully local execution  
+
+---
+
+## Project Structure
+
 ```
+
+.
+├── agents/          # Agent implementations
+├── tools/           # Custom tools
+├── graph/           # Workflow + state management
+├── config/          # Prompts + settings
+├── utils/           # Helpers + logging
+├── ui/              # Flask demo UI
+├── tests/           # Evaluation tests
+├── sample_inputs/   # Demo inputs
+├── outputs/         # Generated outputs
+├── logs/            # Execution logs
+├── main.py          # CLI entry point
+
+````
+
+---
 
 ## Setup Instructions
 
-Requirements:
-
+### Requirements
 - Python 3.11+
-- Optional: Ollama for future local model integration
+- Git
+- Optional: Ollama (for future LLM integration)
 
-Recommended setup:
+---
+
+### Clone Repository
+
+```bash
+git clone https://github.com/Vgamaka/CTSE-Assignment2.git
+cd CTSE-Assignment2
+````
+
+---
+
+### Create Virtual Environment
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate   # Mac/Linux
+# OR
+.venv\Scripts\activate      # Windows
+```
+
+---
+
+### Install Dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-## Run Instructions
+---
 
-Direct text input:
+### Optional: Install Ollama
+
+Install from: [https://ollama.com](https://ollama.com)
+
+Run:
 
 ```bash
-python main.py --text "Build a local planning assistant for software project proposals."
+ollama run llama3
 ```
 
-Sample input file:
+Note: The system works fully without Ollama.
+
+---
+
+## How to Run
+
+### CLI Mode
 
 ```bash
-python main.py --input-file sample_inputs/insurance_archiving.txt
+python main.py --text "Build a student management system"
 ```
 
-Other example inputs:
+OR
 
 ```bash
-python main.py --input-file sample_inputs/nursery_app.txt
-python main.py --input-file sample_inputs/event_system.txt
 python main.py --input-file sample_inputs/smart_campus_portal.txt
 ```
 
-## Frontend Demo UI
+---
 
-A lightweight local Flask UI is included for demo clarity. It does not replace the backend workflow. It simply calls the existing backend functions and visualizes:
-
-- project input
-- the 4 agents and their tools
-- shared state flow across the workflow
-- final Markdown output
-- recent trace/log events
-- saved output file paths
-
-Run the UI:
+### UI Mode (Recommended for Demo)
 
 ```bash
-python ui/app.py
+python -m ui.app
 ```
 
-Or with the local virtual environment:
+Open:
 
-```bash
-.venv/bin/python ui/app.py
 ```
-
-Then open:
-
-```text
 http://127.0.0.1:5000
 ```
 
-Generated artifacts are saved automatically to:
+---
 
-- `outputs/plan_<run_id>.md`
-- `outputs/state_<run_id>.json`
-- `logs/trace_<run_id>.jsonl`
-
-## Test Instructions
-
-Run all tests:
+### Run Tests
 
 ```bash
 pytest
 ```
 
-Run with the local virtual environment:
+---
 
-```bash
-.venv/bin/pytest
+## How the System Works
+
+### Agents
+
+**Intake Agent**
+
+* Extracts domain, stakeholders, features
+* Identifies ambiguities
+
+**Requirements Agent**
+
+* Generates structured requirements
+* Separates functional and non-functional requirements
+
+**Planner Agent**
+
+* Creates user stories and technical tasks
+* Defines dependencies and phases
+
+**Review Agent**
+
+* Detects risks and missing mappings
+* Decides whether to finalize or loop back
+
+---
+
+## Tools
+
+| Tool                       | Purpose                   |
+| -------------------------- | ------------------------- |
+| Project Brief Normalizer   | Extract structured input  |
+| Requirements Formatter     | Generate requirements     |
+| Task Breakdown Generator   | Create planning structure |
+| Consistency & Risk Checker | Validate plan             |
+| File Exporter              | Save outputs              |
+
+---
+
+## State Management
+
+All agents share a single `WorkflowState`.
+
+Key fields:
+
+* project_brief
+* requirements_spec
+* delivery_plan
+* risk_report
+* final_output
+* tool_history
+* agent_trace
+* status
+
+This ensures:
+
+* no context loss
+* deterministic workflow
+* easy testing
+
+---
+
+## Observability
+
+Logs are stored as JSONL:
+
+```
+logs/trace_<run_id>.jsonl
 ```
 
-The tests are deterministic and do not require network access or a running Ollama server.
+Each log contains:
 
-Additional team handoff documents:
+* agent name
+* status
+* input summary
+* output summary
+* updated fields
 
-- [CONTRIBUTIONS.md](/Users/ira/Documents/Playground/CONTRIBUTIONS.md)
-- [DEMO.md](/Users/ira/Documents/Playground/DEMO.md)
+---
 
-## Explanation of Agents
+## Outputs
 
-`intake_agent`
+Generated automatically:
 
-- reads raw user input from shared state
-- identifies domain, stakeholders, requested features, constraints, and ambiguities
-- writes the normalized `project_brief`
+```
+outputs/plan_<run_id>.md
+outputs/state_<run_id>.json
+logs/trace_<run_id>.jsonl
+```
 
-`requirements_agent`
+---
 
-- reads `project_brief`
-- creates functional requirements, non-functional requirements, assumptions, missing information, and grouped modules
-- writes `requirements_spec`
+## Testing
 
-`planner_agent`
+We use pytest for evaluation.
 
-- reads `requirements_spec`
-- generates user stories, suggested modules, technical tasks, priorities, dependencies, and roadmap phases
-- writes `delivery_plan`
+Validations include:
 
-`review_agent`
+* requirement generation
+* task mapping
+* risk detection
+* ambiguity handling
 
-- reads `requirements_spec` and `delivery_plan`
-- checks missing mappings, vague items, unsupported assumptions, and incomplete coverage
-- writes `risk_report`
-- creates final Markdown when the plan is acceptable
+Run:
 
-## Explanation of Tools
+```bash
+pytest
+```
 
-`Project Brief Normalizer Tool`
+---
 
-- converts rough input text into a structured project brief
-- handles empty and vague input safely
+## Common Issues & Fixes
 
-`Requirements Formatter Tool`
+### ModuleNotFoundError
 
-- creates deterministic `FR-*` and `NFR-*` IDs
-- separates assumptions from confirmed requirements
+Use:
 
-`Task Breakdown Generator Tool`
+```bash
+python -m ui.app
+```
 
-- maps requirements to user stories, tasks, dependencies, and phases
-- stays deterministic enough for testing
+NOT:
 
-`Consistency & Risk Checker Tool`
+```bash
+python ui/app.py
+```
 
-- checks requirement-to-task mapping
-- checks vague items and unsupported assumptions
-- checks module and user story coverage
+---
 
-## State Management Explanation
+### UI not loading
 
-The entire workflow shares one `WorkflowState` object defined in `graph/state.py`. This state stores both raw input and every generated planning artifact. The state includes:
+* Activate virtual environment
+* Install dependencies
 
-- `raw_user_input`
-- `project_domain`
-- `stakeholders`
-- `requested_features`
-- `constraints`
-- `clarification_questions`
-- `project_brief`
-- `requirements_spec`
-- `delivery_plan`
-- `risk_report`
-- `final_output`
-- `tool_history`
-- `agent_trace`
-- `errors`
-- `status`
+---
 
-This makes the system easy to test because each stage reads from known fields and writes predictable updates back into the same structure.
+### Ollama issues
 
-## Observability and Logging Explanation
+Disable in:
 
-Execution traces are written as JSONL files through `utils/logger.py`. Each log event includes:
+```python
+enable_live_model = False
+```
 
-- `timestamp`
-- `agent`
-- `status`
-- `input_summary`
-- `output_summary`
-- `updated_fields`
+---
 
-The summaries are intentionally bounded so the logs remain readable in a terminal demo. The logger records system-level events such as run start and completion, along with per-agent step logs.
+## Future Improvements
 
-## Assignment-Friendly Output Structure
+* Full Ollama-based reasoning
+* Better domain detection
+* Output scoring system
+* Effort estimation
+* Additional export formats
 
-The final Markdown output is organized into the following sections:
+---
 
-- `Project Overview`
-- `Stakeholders and Users`
-- `Functional Requirements`
-- `Non-Functional Requirements`
-- `Assumptions and Missing Details`
-- `Suggested Modules`
-- `User Stories`
-- `Task Breakdown`
-- `Risks and Validation Notes`
-- `Recommended Development Phases`
+## Team Contributions
 
-The JSON output is a machine-readable state snapshot that keeps nested structures intact for later testing and validation.
+* Peiris P G V (IT22364388) – Intake Agent, File Exporter Tool, UI, Testing
+* Kulathunga K A K M (IT22915740) – Pending
+* Dissanayake E G M (IT22342744) – Pending
+* Gunarathne M D C H (IT22306104) – Pending
 
-## Limitations and Future Improvements
-
-Current limitations:
-
-- the reasoning is primarily rule-based rather than fully LLM-driven
-- domain detection and feature extraction use simple heuristics
-- review quality is only as strong as the deterministic coverage checks
-
-Reasonable future improvements:
-
-- integrate stronger local Ollama prompting behind the existing tool interfaces
-- improve domain-specific extraction rules for more project types
-- add richer validation metrics and output scoring
-- expand roadmap generation with effort estimates and milestones
-- add optional export formats beyond Markdown and JSON
-
-## Notes on Team Contribution
-
-Several files now include short ownership comments so different students can divide work more clearly across configuration, graph orchestration, agents, and tools. This is meant to make collaboration easier without changing the code structure itself.
