@@ -1,0 +1,6 @@
+We want a Smart Campus Portal for a university. It should help students, lecturers, and admins manage project topics, submissions, milestones, and feedback in one place.
+
+The system should let students browse available projects, propose their own ideas, form teams, track deadlines, and upload deliverables. Lecturers should be able to approve topics, monitor progress, review submissions, and leave feedback. Admin staff should manage academic periods, deadlines, user roles, and reports.
+
+We would like a web-based system first. Security, reliability, and usability are important. It should be realistic for a student development team to build in phases.
+

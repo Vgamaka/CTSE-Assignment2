@@ -1,0 +1,6 @@
+We need a local system for an insurance company to archive customer claim documents and policy records in a structured way.
+
+The system should let records staff upload scanned files, tag them by policy number and claim type, search archived items later, and mark retention status. Supervisors should be able to review archive activity and generate summary reports.
+
+The first version should run locally for demonstration, keep data organized, and be simple enough for phased delivery by a student team.
+

@@ -1,0 +1,6 @@
+Build a nursery management app for a small preschool.
+
+Teachers should be able to record attendance, daily notes, meal updates, and activity summaries for children. Parents should be able to view updates and receive simple progress information. Admin staff should manage child profiles, classroom groups, and term schedules.
+
+The first release can be web-based and should focus on usability, privacy, and a manageable scope for a student project.
+

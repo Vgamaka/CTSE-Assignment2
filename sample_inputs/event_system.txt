@@ -1,0 +1,6 @@
+We want an event management system for a university club.
+
+Club admins should be able to create events, manage registrations, assign volunteers, and track attendance. Members should be able to browse upcoming events, register online, and receive updates about schedule changes. Organizers also need simple reporting after each event.
+
+It should work as a local demo first, support phased development, and produce a clear plan for implementation.
+
