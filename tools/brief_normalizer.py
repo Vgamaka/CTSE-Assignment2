@@ -5,8 +5,10 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from config.prompts import INTAKE_PROMPT
 from graph.state import ProjectBrief
 from utils.helpers import dedupe_strings, detect_constraints, detect_project_domain, detect_stakeholders
+from utils.ollama_client import OllamaClient
 
 
 @dataclass(slots=True)
@@ -41,6 +43,7 @@ class ProjectBriefNormalizerTool:
         project_domain = detect_project_domain(text)
         stakeholders = detect_stakeholders(text)
         requested_features = self._extract_features(text)
+        llm_summary = self._generate_llm_summary(text)
         constraints = detect_constraints(text) + self._extract_constraints(text)
         ambiguities = self._extract_ambiguities(text, project_domain, stakeholders, requested_features)
         clarification_questions = self._build_clarification_questions(
@@ -55,7 +58,7 @@ class ProjectBriefNormalizerTool:
             confidence = "low"
 
         return ProjectBrief(
-            summary=self._summarize_text(text),
+            summary=llm_summary or self._summarize_text(text),
             project_domain=project_domain,
             stakeholders=stakeholders or ["Stakeholders not clearly stated"],
             requested_features=requested_features,
@@ -64,6 +67,24 @@ class ProjectBriefNormalizerTool:
             clarification_questions=clarification_questions,
             confidence=confidence,
         )
+
+    def _generate_llm_summary(self, text: str) -> str:
+        """Optionally enrich the brief summary with a local Ollama model."""
+        if not self.enable_llm_hook:
+            return ""
+        prompt = (
+            f"{INTAKE_PROMPT}\n\n"
+            "Return only a concise 2-3 sentence summary of the user's project brief. "
+            "Do not invent requirements. Keep it plain text.\n\n"
+            f"User brief:\n{text}"
+        )
+        client = OllamaClient(
+            base_url="http://localhost:11434",
+            model="llama3.1:8b",
+            temperature=0.1,
+            timeout_seconds=60,
+        )
+        return self._summarize_text(client.generate(prompt))
 
     def _extract_features(self, text: str) -> list[str]:
         """Pull out feature-like statements from common requirement verbs."""
