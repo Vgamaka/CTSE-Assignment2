@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
-
+from tools.file_exporter import FileExporterTool
 from config.prompts import REVIEW_PROMPT
 from graph.state import AgentTraceEntry, ToolHistoryEntry, WorkflowState
 from tools.consistency_checker import ConsistencyRiskCheckerTool
@@ -48,6 +48,10 @@ class ReviewAgent:
                 delivery_plan=state["delivery_plan"],
                 risk_report={**risk_report, "recommendation": recommendation},
             )
+
+            # Save final output using custom tool
+            exporter = FileExporterTool()
+            exporter.run("final_output.md", final_output)
 
         update = {
             "risk_report": {**risk_report, "recommendation": recommendation, "review_status": review_status},

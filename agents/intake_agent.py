@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from config.prompts import INTAKE_PROMPT
+from config.prompts import INTAKE_AGENT_PROMPT
 from graph.state import AgentTraceEntry, ToolHistoryEntry, WorkflowState
 from tools.brief_normalizer import ProjectBriefNormalizerTool
 from utils.helpers import safe_summary, summarize_updated_fields, utc_timestamp
@@ -29,6 +29,7 @@ class IntakeAgent:
     def __call__(self, state: WorkflowState) -> dict[str, Any]:
         """Process raw input and write project brief fields back to shared state."""
         project_brief = self.tool.run(state["raw_user_input"])
+
         update = {
             "project_domain": project_brief["project_domain"],
             "stakeholders": project_brief["stakeholders"],
@@ -40,7 +41,7 @@ class IntakeAgent:
                 state["tool_history"],
                 tool_name="Project Brief Normalizer Tool",
                 details={
-                    "prompt_stub": INTAKE_PROMPT,
+                    "prompt_stub": INTAKE_AGENT_PROMPT,
                     "stakeholder_count": len(project_brief["stakeholders"]),
                     "feature_count": len(project_brief["requested_features"]),
                 },
@@ -51,6 +52,7 @@ class IntakeAgent:
             ),
             "status": "intake_complete",
         }
+
         self.logger.log_agent_step(
             event_type="agent_step",
             agent=self.name,
@@ -61,9 +63,10 @@ class IntakeAgent:
             payload={
                 "project_domain": project_brief["project_domain"],
                 "clarification_count": len(project_brief["clarification_questions"]),
-                "prompt_stub": safe_summary(INTAKE_PROMPT),
+                "prompt_stub": safe_summary(INTAKE_AGENT_PROMPT),
             },
         )
+
         return update
 
     def _append_tool(
@@ -80,7 +83,11 @@ class IntakeAgent:
         }
         return [*history, entry]
 
-    def _append_trace(self, trace: list[AgentTraceEntry], message: str) -> list[AgentTraceEntry]:
+    def _append_trace(
+        self,
+        trace: list[AgentTraceEntry],
+        message: str,
+    ) -> list[AgentTraceEntry]:
         entry: AgentTraceEntry = {
             "agent": self.name,
             "timestamp": utc_timestamp(),

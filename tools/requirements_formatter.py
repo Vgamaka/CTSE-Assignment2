@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-
+from typing import List
 from graph.state import ModuleItem, ProjectBrief, RequirementItem, RequirementsSpec
 from utils.helpers import dedupe_strings
 

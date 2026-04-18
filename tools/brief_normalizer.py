@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-
+from typing import List
 from config.prompts import INTAKE_PROMPT
 from graph.state import ProjectBrief
 from utils.helpers import dedupe_strings, detect_constraints, detect_project_domain, detect_stakeholders

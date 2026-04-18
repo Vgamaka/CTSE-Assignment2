@@ -59,7 +59,7 @@ class ConsistencyRiskCheckerTool:
             recommendation="loop_to_intake" if severe_ambiguity else "finalize",
             severe_ambiguity=severe_ambiguity,
         )
-
+        
     def _find_missing_requirement_mappings(self, requirements_spec: RequirementsSpec, delivery_plan: DeliveryPlan) -> list[str]:
         """Check whether every functional requirement is covered by a task."""
         mapped_ids = {
