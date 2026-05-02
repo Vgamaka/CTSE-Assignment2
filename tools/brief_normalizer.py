@@ -80,7 +80,7 @@ class ProjectBriefNormalizerTool:
         )
         client = OllamaClient(
             base_url="http://localhost:11434",
-            model="llama3.1:8b",
+            model="phi3",
             temperature=0.1,
             timeout_seconds=60,
         )

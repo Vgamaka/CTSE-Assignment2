@@ -90,10 +90,7 @@ class ConsistencyRiskCheckerTool:
             + [task["title"] + " " + task["description"] for task in delivery_plan["technical_tasks"]]
         ).lower()
         issues: list[str] = []
-        baseline_assumption_markers = (
-            "rule-based and deterministic",
-            "live ollama prompting can be added later",
-        )
+        baseline_assumption_markers = ("local ollama-assisted reasoning", "deterministic python tools", "ollama runs locally", "shared workflowstate contract")
         for assumption in requirements_spec["assumptions"]:
             if any(marker in assumption.lower() for marker in baseline_assumption_markers):
                 continue
@@ -146,3 +143,4 @@ class ConsistencyRiskCheckerTool:
         if ambiguous_items:
             notes.append("Resolve ambiguous items before detailed implementation or estimation.")
         return dedupe_strings(notes)
+

@@ -16,7 +16,7 @@ class AppSettings:
     # TODO: add validated live Ollama client configuration once stronger
     # local reasoning is introduced in a later phase.
     ollama_base_url: str = "http://localhost:11434"
-    ollama_model: str = "llama3.1:8b"
+    ollama_model: str = "phi3"
     enable_live_model: bool = True
     llm_temperature: float = 0.1
     llm_request_timeout_seconds: int = 60

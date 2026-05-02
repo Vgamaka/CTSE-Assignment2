@@ -113,8 +113,8 @@ class RequirementsFormatterTool:
     def _build_assumptions(self, project_brief: ProjectBrief) -> list[str]:
         """List assumptions separately from confirmed requirements."""
         assumptions = [
-            "Current planning behavior is primarily rule-based and deterministic.",
-            "Live Ollama prompting can be added later without changing the state contract.",
+            "The system combines local Ollama-assisted reasoning with deterministic Python tools for structured and testable planning outputs.",
+            "Ollama runs locally through the phi3 model, while the shared WorkflowState contract remains stable across all agents.",
         ]
         if not project_brief["requested_features"]:
             assumptions.append("Core features will need confirmation from the user.")
